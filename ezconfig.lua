@@ -10,7 +10,7 @@
 --   ezconfig.altkey = 'Mod1'
 -- 
 --   globalkeys = ezconfig.keytable.join({
---      ['M-<Left>']  = awful.tag.viewprev,      
+--      ['M-<Left>'] = awful.tag.viewprev,      
 --      ['M-S-j'] = {awful.client.swap.byidx, 1},
 --      ['M-C-k'] = {awful.screen.focus_relative, -1},
 --      ['M-m'] = function () menus.main:show() end,

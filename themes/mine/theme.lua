@@ -71,6 +71,7 @@ theme.tooltip_opacity = 10
 -- theme.[taglist|tasklist]_[bg|fg]_[focus|urgent]
 
 -- Menu
+theme.menu_width = 130
 -- theme.menu_[bg|fg]_[normal|focus]
 -- theme.menu_[height|width|border_color|border_width]
 
@@ -82,7 +83,7 @@ theme.taglist_squares_unsel = themedir .. "/taglist/squareza.png"
 
 -- Misc icons
 --theme.awesome_icon           = themedir .. "/awesome.png"
---theme.menu_submenu_icon      = sharedthemes .. "/default/submenu.png"
+theme.menu_submenu_icon = themedir .. "/submenu.png"
 --theme.tasklist_floating_icon = sharedthemes .. "/default/tasklist/floatingw.png"
 
 -- Layout icons

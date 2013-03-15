@@ -1,4 +1,4 @@
--- sessionmenu.lua --- session menu for awesome
+-- sessionmenu.lua --- a session menu for awesome
 -- 
 -- Author: Georgi Valkov <georgi.t.valkov@gmail.com>
 -- License: GPLv2 (same as awesome)
@@ -9,17 +9,28 @@
 --
 -- To enable the 'Next Boot' menu:
 --   1) setfacl -m u:$USER:r /boot/grub2/grub.cfg
---   2) $USER ALL = NOPASSWD: /usr/sbin/grub2-reboot  #sudoers
+--   2) $USER ALL = NOPASSWD: /usr/sbin/grub2-reboot  #in /etc/sudoers
 -- 
 -- Usage:
 --   ezconfig = require('sessionmenu')
-
+--
+--   mainmenu = awful.menu({
+--     items = { { '&session', sessionmenu.menu } }
+--   }
+--
+--   Overwrite any of the following functions:
+--     sessionmenu.ops.lock
+--     sessionmenu.ops.logout
+--     sessionmenu.ops.suspend
+--     sessionmenu.ops.hibernate
+--     sessionmenu.ops.restart
+--     sessionmenu.ops.shutdown
 
 awful = require('awful')
 local freedesktop_utils = require('freedesktop.utils')
+
+
 freedesktop_utils.icon_theme = 'oxygen'
-
-
 sessionmenu = {}
 sessionmenu.ops = {}
 
@@ -45,7 +56,7 @@ setmetatable(sessionmenu.ops, {
 --
 -- tailor the following functions to your needs
 function sessionmenu.ops.lock () 
-   system('echo lock')
+   system('xlock -mode blank')
 end
 
 function sessionmenu.ops.logout () 
@@ -222,9 +233,9 @@ local function generate_submenu(cb, nowicon)
            { '30 min', timed_call(1200, cb) },
            { '1 hour', timed_call(3600, cb) },
            { '2 hours', timed_call(7200, cb) },
-           { '&custom', dmenu_timed_call(cb) },
-                 }},
-      { '&process', dmenu_waitpid_call(cb) }
+           { '&specify', dmenu_timed_call(cb) },
+                 }, icon('clock')},
+      { '&wait for process', dmenu_waitpid_call(cb), icon('process-stop') }
           }
 end
 
@@ -257,11 +268,11 @@ end
 
 sessionmenu.menu = {
    { '&lock', generate_submenu(sessionmenu.ops.lock, icon('system-lock-screen')), icon('system-lock-screen') },
-   { 'l&ogout', generate_submenu(sessionmenu.ops.logout, icon('system-lock-screen')), icon('system-log-out') },
-   { '&suspend', generate_submenu(sessionmenu.ops.suspend, icon('system-lock-screen')), icon('system-suspend') },
-   { 'h&ibernate', generate_submenu(sessionmenu.ops.hibernate, icon('system-lock-screen')), icon('system-suspend-hibernate') },
-   { '&restart', generate_submenu(sessionmenu.ops.restart, icon('system-lock-screen')), icon('system-reboot') },
-   { '&shutdown', generate_submenu(sessionmenu.ops.shutdown, icon('system-lock-screen')), icon('system-shutdown') },
+   { 'l&ogout', generate_submenu(sessionmenu.ops.logout, icon('system-log-out')), icon('system-log-out') },
+   { '&suspend', generate_submenu(sessionmenu.ops.suspend, icon('system-suspend')), icon('system-suspend') },
+   { 'h&ibernate', generate_submenu(sessionmenu.ops.hibernate, icon('system-suspend-hibernate')), icon('system-suspend-hibernate') },
+   { '&restart', generate_submenu(sessionmenu.ops.restart, icon('system-reboot')), icon('system-reboot') },
+   { '&shutdown', generate_submenu(sessionmenu.ops.shutdown, icon('system-shutdown')), icon('system-shutdown') },
    { '', nil },
    { '&next boot', next_boot_submenu() },
    { '&cancel pending', cancel_pending_action },
