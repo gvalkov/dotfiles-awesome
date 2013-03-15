@@ -108,9 +108,17 @@ awful.menu.menu_keys['back'] = {'BackSpace', 'Left'}
 fmenu = util.load_or_create_freedesktop_menu()
 
 function create_mainmenu()
+
+   local browsers = {
+      { 'firefox', 'firefox', util.icon('firefox') },
+      { 'firefox profile', util.firefox_profiles_menu() },
+      { 'chrome', 'google-chrome', util.icon('google-chrome') },
+   }
+   
    local menu = awful.menu(
       { items = { { "awesome", myawesomemenu, beautiful.awesome_icon },
                   { "open terminal", terminal },
+                  { "browsers", browsers },
                   { "freedesktop", fmenu },
                   { "&session", sessionmenu.menu}
       }

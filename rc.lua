@@ -12,6 +12,7 @@ autofocus = require('awful.autofocus')
 freedesktop = {}
 freedesktop.utils = require('freedesktop.utils')
 freedesktop.menu = require('freedesktop.menu')
+serpent = require('lib.serpent')
 
 -- user imports
 ezconfig = require('ezconfig')
@@ -25,7 +26,7 @@ util.handle_runtime_errors(awesome)
 
 -- globals
 terminal = 'gnome-terminal'
-editor = os.getenv('EDITOR') or 'nano'
+editor = os.getenv('EDITOR') or 'emacs'
 editor_cmd = terminal .. ' -e ' .. editor
 modkey = 'Mod4' ; ezconfig.modkey = modkey
 altkey = 'Mod1' ; ezconfig.altkey = altkey
@@ -76,7 +77,7 @@ local layouts = {
 tags = {}
 
 for s = 1, screen.count() do
-    tags[s] = awful.tag({ 1, 2, 3, 'skype', 'mail', 'org', 7, 8, 'v' }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 3, 'skype', 'mail', 'org', 7, 8, 'vm' }, s, layouts[1])
 end
 
 awful.tag.setproperty(tags[1][4], 'mwfact', 0.13)
@@ -92,14 +93,17 @@ menus.awesome = {
    { 'restart', awesome.restart },
    { 'quit', awesome.quit }
 }
+
 menus.browsers = {
-   { 'firefox', 'firefox', util.icon('firefox') },
-   { 'chrome', 'google-chrome', util.icon('google-chrome') },
+   { '&firefox', 'firefox', util.icon('firefox') },
+   { 'ff &profile', util.firefox_profiles_menu(), util.icon('firefox') },
+   { '&chrome', 'google-chrome', util.icon('google-chrome') },
 }
+
 menus.main = awful.menu({
-   items = { { 'awesome', menus.awesome, beautiful.awesome_icon },
-             { '&browsers', menus.browsers },
+   items = { { '&browsers', menus.browsers },
              { '&xdg', menus.freedesktop },
+             { 'awesome', menus.awesome, beautiful.awesome_icon },
              { '&session', sessionmenu.menu },
              { 'open terminal', terminal }
    }
@@ -375,6 +379,7 @@ local classrules = {
    ['Claws-mail'] = {tag = tags[1][5]},
    ['xbmc.bin']   = {floating = true, border_width = 0},
    ['Firefox']    = {buttons = firefoxbuttons},
+   ['VirtualBox'] = {tag = tags[1][9]},
 }
 
 rules.rules = {
@@ -405,7 +410,7 @@ rules.rules = {
      callback = awful.client.setslave },
 
    { rule = { class = 'Skype', name = 'File Transfers' },
-     properties = { tag = tags[1][4] },
+     properties = { tag = tags[1][4] }, 
      callback = awful.client.setslave },
 
    { rule = { class = 'Emacs', name = 'Emacs-Org-Mode' },

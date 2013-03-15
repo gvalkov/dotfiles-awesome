@@ -109,4 +109,36 @@ function util.split(s, sep)
    return res
 end
 
+function util.list_firefox_profiles(ini)
+   if ini == nil then
+      ini = os.getenv('HOME')..'/.mozilla/firefox/profiles.ini'
+   end
+
+   local res = {}
+   print(ini)
+   if awful.util.file_readable(ini) then
+      for line in io.lines(ini) do
+         local _, _, name = line:find('^Name=(.*)')
+
+         if name ~= nil then
+            table.insert(res, name)
+         end
+      end
+   end
+   
+   return res
+end
+
+function util.firefox_profiles_menu(ini)
+   local profiles = util.list_firefox_profiles(ini)
+   local menu = {}
+
+   for n, name in ipairs(profiles) do
+      local item = {name, 'firefox -P '..name, util.icon('firefox')}
+      table.insert(menu, item)
+   end
+
+   return menu
+end
+
 return util
