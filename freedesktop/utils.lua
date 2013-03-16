@@ -85,6 +85,13 @@ function lookup_icon(arg)
         end
 
         for i, icon_theme_directory in ipairs(icon_theme_paths) do
+            for k, icon_type in ipairs(all_icon_types) do
+                for j, size in ipairs(arg.icon_sizes or isizes) do
+                    _, _, size=size:find('(%d+)x')
+                    table.insert(icon_path, icon_theme_directory .. icon_type .. '/' .. size .. '/')
+                end
+            end
+
             for j, size in ipairs(arg.icon_sizes or isizes) do
                 for k, icon_type in ipairs(all_icon_types) do
                     table.insert(icon_path, icon_theme_directory .. size .. '/' .. icon_type .. '/')

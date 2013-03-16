@@ -15,7 +15,7 @@
 --   ezconfig = require('sessionmenu')
 --
 --   mainmenu = awful.menu({
---     items = { { '&session', sessionmenu.menu } }
+--     items = { { '&session', sessionmenu.menu() } }
 --   }
 --
 --   Overwrite any of the following functions:
@@ -30,7 +30,7 @@ awful = require('awful')
 local freedesktop_utils = require('freedesktop.utils')
 
 
-freedesktop_utils.icon_theme = 'oxygen'
+freedesktop_utils.icon_theme = 'Faenza'
 sessionmenu = {}
 sessionmenu.ops = {}
 
@@ -266,16 +266,18 @@ local function next_boot_submenu()
 end
 
 
-sessionmenu.menu = {
+sessionmenu.menu = function()
+   return {
    { '&lock', generate_submenu(sessionmenu.ops.lock, icon('system-lock-screen')), icon('system-lock-screen') },
    { 'l&ogout', generate_submenu(sessionmenu.ops.logout, icon('system-log-out')), icon('system-log-out') },
    { '&suspend', generate_submenu(sessionmenu.ops.suspend, icon('system-suspend')), icon('system-suspend') },
    { 'h&ibernate', generate_submenu(sessionmenu.ops.hibernate, icon('system-suspend-hibernate')), icon('system-suspend-hibernate') },
-   { '&restart', generate_submenu(sessionmenu.ops.restart, icon('system-reboot')), icon('system-reboot') },
+   { '&restart', generate_submenu(sessionmenu.ops.restart, icon('system-restart')), icon('system-restart') },
    { '&shutdown', generate_submenu(sessionmenu.ops.shutdown, icon('system-shutdown')), icon('system-shutdown') },
    { '', nil },
-   { '&next boot', next_boot_submenu() },
-   { '&cancel pending', cancel_pending_action },
-}
+   { '&next boot', next_boot_submenu(), icon('next') },
+   { '&cancel pending', cancel_pending_action, icon('stop') },
+   }
+end
 
 return sessionmenu

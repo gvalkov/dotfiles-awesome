@@ -2,8 +2,8 @@
 
 freedesktop = {}
 freedesktop.utils = require('freedesktop.utils')
+freedesktop.utils.icon_theme = 'Faenza'
 freedesktop.menu = require('freedesktop.menu')
-freedesktop.utils.icon_theme = 'gnome'
 
 serpent = require('lib.serpent')
 

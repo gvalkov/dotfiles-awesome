@@ -33,7 +33,7 @@ altkey = 'Mod1' ; ezconfig.altkey = altkey
 confdir = awful.util.getdir('config')
 
 -- theming
-freedesktop.utils.icon_theme = 'gnome'
+freedesktop.utils.icon_theme = 'Faenza'
 beautiful.init(confdir .. '/themes/mine/theme.lua')
 if beautiful.wallpaper then util.set_wallpaper(beautiful.wallpaper, screen) end
 
@@ -105,7 +105,7 @@ menus.main = awful.menu({
    items = { { '&browsers', menus.browsers },
              { '&xdg', menus.freedesktop },
              { 'awesome', menus.awesome, beautiful.awesome_icon },
-             { '&session', sessionmenu.menu },
+             { '&session', sessionmenu.menu() },
              { 'open terminal', terminal }
    }
 })
