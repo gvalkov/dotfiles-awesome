@@ -77,7 +77,7 @@ local layouts = {
 tags = {}
 
 for s = 1, screen.count() do
-    tags[s] = awful.tag({ 1, 2, 3, 'skype', 'mail', 'org', 7, 8, 'vm' }, s, layouts[1])
+    tags[s] = awful.tag({ 1, 2, 'web', 'skype', 'mail', 'org', 7, 8, 'vm' }, s, layouts[1])
 end
 
 awful.tag.setproperty(tags[1][4], 'mwfact', 0.13)
@@ -96,6 +96,7 @@ menus.awesome = {
 
 menus.browsers = {
    { '&firefox', 'firefox', util.icon('firefox') },
+   { 'firefox &private', 'firefox -new-instance -private', util.icon('firefox') },
    { 'ff &profile', util.firefox_profiles_menu(), util.icon('firefox') },
    { '&chrome', 'google-chrome', util.icon('google-chrome') },
 }
@@ -280,7 +281,6 @@ globalkeys = ezconfig.keytable.join({
    ['M-f'] = util.spawn('firefox'),
    ['M-g'] = util.spawn('gvim'),
    ['M-e'] = util.spawn('emacsclient -c'),
-   -- ['M-<Menu>'] = util.spawn('python3 /home/gv/source/wip/menus/menu.py'),
    ['M-<Menu>'] = util.spawn('qdbus org.desktoputils /Menus org.desktoputils.menu.showxy main-menu 500 700'),
    ['M-C-S-q'] = awesome.quit,
    ['M-C-q'] = awesome.restart,
@@ -380,6 +380,8 @@ local classrules = {
    ['xbmc.bin']   = {floating = true, border_width = 0},
    ['Firefox']    = {buttons = firefoxbuttons},
    ['VirtualBox'] = {tag = tags[1][9]},
+   ['Emacs'] = {size_hints_honor = false},
+   ['gnome-terminal]'] = {size_hints_honor = false},
 }
 
 rules.rules = {
