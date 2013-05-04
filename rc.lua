@@ -13,6 +13,7 @@ freedesktop = {}
 freedesktop.utils = require('freedesktop.utils')
 freedesktop.menu = require('freedesktop.menu')
 serpent = require('lib.serpent')
+scratch = require('scratch')
 
 -- user imports
 ezconfig = require('ezconfig')
@@ -281,10 +282,14 @@ globalkeys = ezconfig.keytable.join({
    ['M-f'] = util.spawn('firefox'),
    ['M-g'] = util.spawn('gvim'),
    ['M-e'] = util.spawn('emacsclient -c'),
-   ['M-<Menu>'] = util.spawn('qdbus org.desktoputils /Menus org.desktoputils.menu.showxy main-menu 500 700'),
    ['M-C-S-q'] = awesome.quit,
    ['M-C-q'] = awesome.restart,
    ['M-m'] = function () menus.main:show() end,
+   ['M-<Menu>'] = function () menus.main:show() end,
+
+   -- scratchpads
+   ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 0.45},
+   ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 0.45},
    
    -- resizing
    ['M-l'] =   {awful.tag.incmwfact, 0.05},
@@ -370,6 +375,7 @@ end
 root.keys(globalkeys)
 
 local classrules = {
+   ['Steam']    = {floating = true},
    ['MPlayer']  = {floating = true},
    ['pinentry'] = {floating = true},
    ['krunner']  = {floating = true},

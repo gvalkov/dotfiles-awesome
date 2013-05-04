@@ -1,11 +1,12 @@
--- sessionmenu.lua --- a session menu for awesome
+-- sessionmenu.lua --- an advanced session menu for awesome
 -- 
 -- Author: Georgi Valkov <georgi.t.valkov@gmail.com>
 -- License: GPLv2 (same as awesome)
 -- 
 -- Requires:
---   dmenu
+--   dmenu or zenity
 --   inotifywait (part of inotify-tools)
+--   awesome-freedesktop
 --
 -- To enable the 'Next Boot' menu:
 --   1) setfacl -m u:$USER:r /boot/grub2/grub.cfg
@@ -90,6 +91,9 @@ local function icon(name)
 end
 
 -- get the output of a command started with `awful.util.spawn_with_shell`
+-- (this works by redirecting stdout to a file and blocking until it's
+-- closed - if you know of a solution that integrates with awesome's
+-- event loop, do share!)
 local function check_output(cmd)
    local tmpfile = os.tmpname()
    cmd = string.format('%s > %s', cmd, tmpfile)
@@ -224,9 +228,13 @@ local function cancel_pending_action()
    end
 end
 
-local function generate_submenu(cb, nowicon)
+local function generate_submenu(cb, nowlabel, nowicon)
+   if nowlabel == nil then
+      nowlabel = '&now'
+   end
+   
    return {
-      { '&now', cb, nowicon },
+      { nowlabel, cb, nowicon },
       { '&after', {
            { '5 min', timed_call(300, cb) },
            { '15 min', timed_call(600, cb) },
@@ -265,18 +273,22 @@ local function next_boot_submenu()
    return ret
 end
 
+local function entry(label, iname, cb)
+   return { label, generate_submenu(cb, label, icon(iname)), icon(iname) }
+end
+
 
 sessionmenu.menu = function()
    return {
-   { '&lock', generate_submenu(sessionmenu.ops.lock, icon('system-lock-screen')), icon('system-lock-screen') },
-   { 'l&ogout', generate_submenu(sessionmenu.ops.logout, icon('system-log-out')), icon('system-log-out') },
-   { '&suspend', generate_submenu(sessionmenu.ops.suspend, icon('system-suspend')), icon('system-suspend') },
-   { 'h&ibernate', generate_submenu(sessionmenu.ops.hibernate, icon('system-suspend-hibernate')), icon('system-suspend-hibernate') },
-   { '&restart', generate_submenu(sessionmenu.ops.restart, icon('system-restart')), icon('system-restart') },
-   { '&shutdown', generate_submenu(sessionmenu.ops.shutdown, icon('system-shutdown')), icon('system-shutdown') },
-   { '', nil },
-   { '&next boot', next_boot_submenu(), icon('next') },
-   { '&cancel pending', cancel_pending_action, icon('stop') },
+      entry('&lock',      'system-lock-screen', sessionmenu.ops.lock),
+      entry('l&ogout',    'system-log-out',     sessionmenu.ops.logout),
+      entry('&suspend',   'system-suspend',     sessionmenu.ops.suspend),
+      entry('h&ibernate', 'system-suspend-hibernate', sessionmenu.ops.hibernate),
+      entry('&restart',   'system-restart',     sessionmenu.ops.restart),
+      entry('s&hutdown',  'system-shutdown',    sessionmenu.ops.shutdown),
+      { '', nil },
+      { '&next boot', next_boot_submenu(), icon('next') },
+      { '&cancel pending', cancel_pending_action, icon('stop') },
    }
 end
 

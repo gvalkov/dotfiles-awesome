@@ -13,6 +13,7 @@ local menubar = require("menubar")
 local sessionmenu = require('sessionmenu')
 local vicious = require('vicious')
 local util = require('util')
+local scratch = require('scratch')
 
 freedesktop = {}
 freedesktop.utils = require('freedesktop.utils')
@@ -120,7 +121,7 @@ function create_mainmenu()
                   { "open terminal", terminal },
                   { "browsers", browsers },
                   { "freedesktop", fmenu },
-                  { "&session", sessionmenu.menu}
+                  { "&session", sessionmenu.menu()}
       }
       })
 
@@ -275,6 +276,7 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
+    awful.key({ modkey }, "F11", function () scratch.drop("xterm") end),
 
     awful.key({ modkey,           }, "j",
         function ()
