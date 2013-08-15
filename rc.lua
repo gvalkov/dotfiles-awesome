@@ -376,6 +376,7 @@ root.keys(globalkeys)
 
 local classrules = {
    ['Steam']    = {floating = true},
+   ['Qmlviewer']= {floating = true},
    ['MPlayer']  = {floating = true},
    ['pinentry'] = {floating = true},
    ['krunner']  = {floating = true},
