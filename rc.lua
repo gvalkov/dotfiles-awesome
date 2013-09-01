@@ -78,20 +78,21 @@ local layouts = {
 tags = {}
 
 for s = 1, screen.count() do
-    tags[s] = awful.tag({ 1, 2, 'web', 'skype', 'mail', 'org', 7, 8, 'vm' }, s, layouts[1])
+    tags[s] = awful.tag({ '1', '2', '3', '4', '5', '6', 7, 8, '9', 'F1', 'F2', 'F3', 'F4' }, s, layouts[1])
 end
 
-awful.tag.setproperty(tags[1][4], 'mwfact', 0.13)
+awful.tag.setproperty(tags[1][12], 'mwfact', 0.13)
+awful.tag.setproperty(tags[1][11], 'mwfact', 1-0.13)
 
 -- menus
 awful.menu.menu_keys['back'] = {'BackSpace', 'Left'}
 menus = {}
 
-menus.freedesktop = util.load_or_create_freedesktop_menu()
+--menus.freedesktop = util.load_or_create_freedesktop_menu()
 menus.awesome = {
    { 'manual', terminal .. ' -e man awesome' },
    { 'edit config', editor_cmd .. ' ' .. awesome.conffile },
-   { 'restart', awesome.restart },
+   { '&restart', awesome.restart },
    { 'quit', awesome.quit }
 }
 
@@ -105,7 +106,7 @@ menus.browsers = {
 menus.main = awful.menu({
    items = { { '&browsers', menus.browsers },
              { '&xdg', menus.freedesktop },
-             { 'awesome', menus.awesome, beautiful.awesome_icon },
+             { '&awesome', menus.awesome, beautiful.awesome_icon },
              { '&session', sessionmenu.menu() },
              { 'open terminal', terminal }
    }
@@ -255,6 +256,15 @@ globalkeys = ezconfig.keytable.join({
    -- navigation
    ['M-<Left>'] = awful.tag.viewprev,
    ['M-<Right>'] = awful.tag.viewnext,
+
+   ['M-S-<Left>'] = function (client) 
+      s = client.focus.screen
+      
+      if awful.client.focus and tags[s][6] then
+         awful.client.movetotag(tags[s][6])
+      end
+   end,
+
    ['M-`'] = awful.tag.history.restore,
    ['M-j'] = {util.raise_and_focus, 1},
    ['M-k'] = {util.raise_and_focus, -1},
@@ -315,7 +325,7 @@ globalkeys = ezconfig.keytable.join({
       end,
 
    ['M-r'] = util.spawn(table.concat({
-    'dmenu-launch.py', 
+    '/home/gv/.dotfiles/bin/dmenu-launch.py', 
     -- '-nb', "'#3F3F3F'", -- normal background color
     -- '-nf', "'#DCDCCC'", -- normal foreground color
     -- '-sb', "'#7F9F7F'", -- selected background color
@@ -343,34 +353,29 @@ clientkeys = ezconfig.keytable.join({
 -- tag navigation keys
 for i=1, keynumber do
    globalkeys = awful.util.table.join(globalkeys, ezconfig.keytable.join({
-   ['M-#'..i+9] = 
-      function ()
-         local screen = mouse.screen
-         if tags[screen][i] then
-            awful.tag.viewonly(tags[screen][i])
-         end
-      end,
-   ['M-C-#'..i+9] =
-      function ()
-         local screen = mouse.screen
-         if tags[screen][i] then
-             awful.tag.viewtoggle(tags[screen][i])
-         end
-      end,
-   ['M-S-#'..i+9] =
-      function ()
-        if client.focus and tags[client.focus.screen][i] then
-           awful.client.movetotag(tags[client.focus.screen][i])
-        end
-      end,
-   ['M-C-S-#'..i+9] = 
-      function ()
-         if client.focus and tags[client.focus.screen][i] then
-            awful.client.toggletag(tags[client.focus.screen][i])
-         end
-      end
-}))
+   ['M-#'..i+9] =  {util.viewonly, i},
+   ['M-C-#'..i+9] = {util.viewtoggle, i},
+   ['M-S-#'..i+9] = {util.movetotag, i},
+   ['M-C-S-#'..i+9] = {util.toggletag, i},
+   }))
 end
+
+
+-- custom tag navigation keys
+globalkeys = awful.util.table.join(globalkeys, ezconfig.keytable.join({
+   ['M-<F1>'] = {util.viewonly, 10},
+   ['M-<F2>'] = {util.viewonly, 11},
+   ['M-<F3>'] = {util.viewonly, 12},
+   ['M-<F4>'] = {util.viewonly, 13},
+   ['M-S-<F1>'] = {util.movetotag, 10},
+   ['M-S-<F2>'] = {util.movetotag, 11},
+   ['M-S-<F3>'] = {util.movetotag, 12},
+   ['M-S-<F4>'] = {util.movetotag, 13},
+   ['M-C-<F1>'] = {util.viewtoggle, 10},
+   ['M-C-<F2>'] = {util.viewtoggle, 11},
+   ['M-C-<F3>'] = {util.viewtoggle, 12},
+   ['M-C-<F4>'] = {util.viewtoggle, 13},
+}))
 
 root.keys(globalkeys)
 
@@ -388,7 +393,7 @@ local classrules = {
    ['Firefox']    = {buttons = firefoxbuttons},
    ['VirtualBox'] = {tag = tags[1][9]},
    ['Emacs'] = {size_hints_honor = false},
-   ['gnome-terminal]'] = {size_hints_honor = false},
+   ['Thunderbird'] = {tag = tags[1][10]},
 }
 
 rules.rules = {
@@ -411,19 +416,32 @@ rules.rules = {
    { rule = { name = 'Menus' },
      properties = { floating = true } },
 
+   { rule = { name = 'Terminal' },
+     properties = { size_hints_honor = false } },
+
    { rule = { class = 'Skype', name = 'gvalkov.im - Skype™' },
-     properties = { tag = tags[1][4] } },
+     properties = { tag = tags[1][12] } },
 
    { rule = { class = 'Skype', role = 'ConversationsWindow' },
-     properties = { tag = tags[1][4] },
+     properties = { tag = tags[1][12] },
      callback = awful.client.setslave },
+
+   { rule = { class = 'Skype', role = 'CallWindow' },
+     properties = { tag = tags[1][12], floating = true } },
 
    { rule = { class = 'Skype', name = 'File Transfers' },
-     properties = { tag = tags[1][4] }, 
+     properties = { tag = tags[1][12] }, 
      callback = awful.client.setslave },
 
+   { rule = { class = 'Pidgin', role = 'conversation' },
+     properties = { tag = tags[1][11] }, },
+
+   { rule = { class = 'Pidgin', role = 'buddy_list' },
+     properties = { tag = tags[1][11] },
+     callback = awful.client.setslave, },
+
    { rule = { class = 'Emacs', name = 'Emacs-Org-Mode' },
-     properties = { tag = tags[1][6] }, },
+     properties = { tag = tags[1][13] } },
 }
 
 for cls, props in pairs(classrules) do

@@ -141,4 +141,37 @@ function util.firefox_profiles_menu(ini)
    return menu
 end
 
+function util.movetotag(i)
+   if client.focus and tags[client.focus.screen][i] then
+      awful.client.movetotag(tags[client.focus.screen][i])
+   end
+end
+
+function util.viewonly(i)
+   local screen = mouse.screen
+   local t = tags[screen][i]
+
+   if awful.tag.selected(screen) == t then
+      awful.tag.history.restore()
+      return
+   end
+
+   if t then
+      awful.tag.viewonly(t)
+   end
+end
+
+function util.viewtoggle(i)
+   local screen = mouse.screen
+   if tags[screen][i] then
+       awful.tag.viewtoggle(tags[screen][i])
+   end
+end
+
+function util.toggletag(i)
+   if client.focus and tags[client.focus.screen][i] then
+      awful.client.toggletag(tags[client.focus.screen][i])
+   end
+end
+
 return util
