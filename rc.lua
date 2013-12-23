@@ -78,7 +78,7 @@ local layouts = {
 tags = {}
 
 for s = 1, screen.count() do
-    tags[s] = awful.tag({ '1', '2', '3', '4', '5', '6', 7, 8, '9', 'F1', 'F2', 'F3', 'F4' }, s, layouts[1])
+    tags[s] = awful.tag({ '1', '2', '3', '4', '5', '6', '7', '8', '9', 'F1', 'F2', 'F3', 'F4' }, s, layouts[1])
 end
 
 awful.tag.setproperty(tags[1][12], 'mwfact', 0.13)
@@ -91,9 +91,9 @@ menus = {}
 --menus.freedesktop = util.load_or_create_freedesktop_menu()
 menus.awesome = {
    { 'manual', terminal .. ' -e man awesome' },
-   { 'edit config', editor_cmd .. ' ' .. awesome.conffile },
+   { '&edit config', editor_cmd .. ' ' .. awesome.conffile },
    { '&restart', awesome.restart },
-   { 'quit', awesome.quit }
+   { '&quit', awesome.quit }
 }
 
 menus.browsers = {
@@ -290,6 +290,7 @@ globalkeys = ezconfig.keytable.join({
    -- programs
    ['M-a'] = util.spawn(terminal),
    ['M-f'] = util.spawn('firefox'),
+   ['M-t'] = util.spawn('dolphin'),
    ['M-g'] = util.spawn('gvim'),
    ['M-e'] = util.spawn('emacsclient -c'),
    ['M-C-S-q'] = awesome.quit,
@@ -515,8 +516,8 @@ client.connect_signal("focus", function(c) c.border_color = beautiful.border_foc
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
 -- autostart
-awful.util.spawn_with_shell('pgrep -xf "systemd --user" || systemd --user')
-awful.util.spawn_with_shell('sleep 1 && pgrep -xf "systemd --user" && systemctl --user start progs.target')
+-- awful.util.spawn_with_shell('pgrep -xf "systemd --user" || systemd --user')
+-- awful.util.spawn_with_shell('sleep 1 && pgrep -xf "systemd --user" && systemctl --user start progs.target')
 
 -- Local Variables:
 -- mode: lua
