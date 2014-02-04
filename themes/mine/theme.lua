@@ -99,6 +99,13 @@ theme.layout_max        = themedir .. "/layouts/max.png"
 theme.layout_fullscreen = themedir .. "/layouts/fullscreen.png"
 theme.layout_magnifier  = themedir .. "/layouts/magnifier.png"
 theme.layout_floating   = themedir .. "/layouts/floating.png"
+theme.layout_termfair      = themedir .. "/layouts/termfairw.png"
+theme.layout_browse        = themedir .. "/layouts/browsew.png"
+theme.layout_gimp          = themedir .. "/layouts/gimpw.png"
+theme.layout_cascade       = themedir .. "/layouts/cascadew.png"
+theme.layout_cascadebrowse = themedir .. "/layouts/cascadebrowsew.png"
+theme.layout_centerwork    = themedir .. "/layouts/centerworkw.png"
+
 
 -- Widget icons
 theme.widget_cpu    = themes .. "/icons/gigamo/cpu.png"

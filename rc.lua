@@ -19,6 +19,7 @@ scratch = require('scratch')
 ezconfig = require('ezconfig')
 sessionmenu = require('sessionmenu')
 util = require('util')
+user_layouts = require('layouts')
 
 
 -- error handling
@@ -26,7 +27,7 @@ util.handle_startup_errors(awesome)
 util.handle_runtime_errors(awesome)
 
 -- globals
-terminal = 'gnome-terminal'
+terminal = 'konsole'
 editor = os.getenv('EDITOR') or 'emacs'
 editor_cmd = terminal .. ' -e ' .. editor
 modkey = 'Mod4' ; ezconfig.modkey = modkey
@@ -58,16 +59,21 @@ naughty.config.presets.critical.timeout = 40
 local layouts = {
    -- awful.layout.suit.floating,
    awful.layout.suit.tile,
-   -- awful.layout.suit.tile.left,
-   -- awful.layout.suit.tile.bottom,
-   -- awful.layout.suit.tile.top,
+   awful.layout.suit.tile.left,
+   awful.layout.suit.tile.bottom,
+   awful.layout.suit.tile.top,
    awful.layout.suit.fair,
-   -- awful.layout.suit.fair.horizontal,
+   awful.layout.suit.fair.horizontal,
    -- awful.layout.suit.spiral,
    -- awful.layout.suit.spiral.dwindle,
    awful.layout.suit.max,
    awful.layout.suit.max.fullscreen,
    -- awful.layout.suit.magnifier
+   user_layouts.browse,          
+   user_layouts.termfair,
+   user_layouts.cascade,
+   user_layouts.cascadebrowse,   
+   user_layouts.centerwork,
 }
 
 -- tags = {
@@ -78,7 +84,7 @@ local layouts = {
 tags = {}
 
 for s = 1, screen.count() do
-    tags[s] = awful.tag({ '1', '2', '3', '4', '5', '6', '7', '8', '9', 'F1', 'F2', 'F3', 'F4' }, s, layouts[1])
+    tags[s] = awful.tag({ '1', '2', '3', '4', '5', '6', '7', '8', '9', '@', 'irc', 'im', 'F4' }, s, layouts[1])
 end
 
 awful.tag.setproperty(tags[1][12], 'mwfact', 0.13)
@@ -135,7 +141,7 @@ widgets.taglist.buttons = ezconfig.btntable.join({
 widgets.taglist.new = function(s)
    return awful.widget.taglist(s, awful.widget.taglist.filter.all,
                                widgets.taglist.buttons)
-end 
+end
 
 widgets.tasklist = {}
 widgets.tasklist.buttons = ezconfig.btntable.join({
@@ -227,7 +233,7 @@ end
 -- mouse bindings for the root window
 root.buttons(ezconfig.btntable.join({
    [3] = function () menus.main:toggle() end,
-   [4] = awful.tag.viewnext, 
+   [4] = awful.tag.viewnext,
    [5] = awful.tag.viewprev
 }))
 
@@ -257,9 +263,9 @@ globalkeys = ezconfig.keytable.join({
    ['M-<Left>'] = awful.tag.viewprev,
    ['M-<Right>'] = awful.tag.viewnext,
 
-   ['M-S-<Left>'] = function (client) 
+   ['M-S-<Left>'] = function (client)
       s = client.focus.screen
-      
+
       if awful.client.focus and tags[s][6] then
          awful.client.movetotag(tags[s][6])
       end
@@ -275,7 +281,7 @@ globalkeys = ezconfig.keytable.join({
    ['M-C-j'] = {awful.screen.focus_relative, 1},
    ['M-C-k'] = {awful.screen.focus_relative, -1},
    ['M-u']   = awful.client.urgent.jumpto,
-   ['M-<Tab>'] = 
+   ['M-<Tab>'] =
       function ()
          awful.client.focus.history.previous()
          if client.focus then client.focus:raise() end
@@ -286,7 +292,7 @@ globalkeys = ezconfig.keytable.join({
    ['M-S-q'] = function (c) awful.client.movetoscreen(c, 2) end,
    ['M-w'] = {awful.screen.focus, 2},
    ['M-S-w'] = function (c) awful.client.movetoscreen(c, 1) end,
-   
+
    -- programs
    ['M-a'] = util.spawn(terminal),
    ['M-f'] = util.spawn('firefox'),
@@ -297,14 +303,20 @@ globalkeys = ezconfig.keytable.join({
    ['M-C-q'] = awesome.restart,
    ['M-m'] = function () menus.main:show() end,
    ['M-<Menu>'] = function () menus.main:show() end,
+   
+   -- 
+   ['M-j'] = {util.hjklfocus_and_raise, 'down'},
+   ['M-k'] = {util.hjklfocus_and_raise, 'up'},
+   ['M-h'] = {util.hjklfocus_and_raise, 'left'},
+   ['M-l'] = {util.hjklfocus_and_raise, 'right'},
 
    -- scratchpads
    ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 0.45},
    ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 0.45},
-   
+
    -- resizing
-   ['M-l'] =   {awful.tag.incmwfact, 0.05},
-   ['M-h'] =   {awful.tag.incmwfact, -0.05},
+   -- ['M-l'] =   {awful.tag.incmwfact, 0.05},
+   -- ['M-h'] =   {awful.tag.incmwfact, -0.05},
    ['M-S-h'] = {awful.tag.incnmaster, 1},
    ['M-S-l'] = {awful.tag.incnmaster, -1},
    ['M-C-h'] = {awful.tag.incncol, 1},
@@ -316,17 +328,17 @@ globalkeys = ezconfig.keytable.join({
    -- prompts
    -- ['M-r'] = function () widgets.prompts[mouse.screen]:run() end,
    ['M-p'] = menubar.show,
-   ['M-x'] = 
+   ['M-x'] =
       function ()
          awful.prompt.run(
             {prompt = "Run Lua code: " },
-            prompts[mouse.screen].widget,
+            widgets.prompts[mouse.screen].widget,
             awful.util.eval, nil,
             awful.util.getdir("cache") .. "/history_eval")
       end,
 
    ['M-r'] = util.spawn(table.concat({
-    '/home/gv/.dotfiles/bin/dmenu-launch.py', 
+    '/home/gv/.dotfiles/bin/dmenu-launch.py',
     -- '-nb', "'#3F3F3F'", -- normal background color
     -- '-nf', "'#DCDCCC'", -- normal foreground color
     -- '-sb', "'#7F9F7F'", -- selected background color
@@ -343,7 +355,7 @@ clientkeys = ezconfig.keytable.join({
    ["M-o"] = awful.client.movetoscreen,
    ["M-t"] = function (c) c.ontop = not c.ontop end,
    ["M-n"] = function (c) c.minimized = true end,
-   ["M-C-m"] = 
+   ["M-C-m"] =
       function (c)
          c.maximized_horizontal = not c.maximized_horizontal
          c.maximized_vertical   = not c.maximized_vertical
@@ -387,7 +399,8 @@ local classrules = {
    ['pinentry'] = {floating = true},
    ['krunner']  = {floating = true},
    ['gimp']     = {floating = true},
-   ['Plasma']   = {floating = true, border_width = 0},
+   ['Plasma']   = {floating = true, border_width = 0, sticky=true},
+   ['plasma-desktop']   = {floating = true, border_width = 0},
    ['Plugin-container'] = {floating = true, border_width = 0},
    ['Claws-mail'] = {tag = tags[1][5]},
    ['xbmc.bin']   = {floating = true, border_width = 0},
@@ -431,7 +444,7 @@ rules.rules = {
      properties = { tag = tags[1][12], floating = true } },
 
    { rule = { class = 'Skype', name = 'File Transfers' },
-     properties = { tag = tags[1][12] }, 
+     properties = { tag = tags[1][12] },
      callback = awful.client.setslave },
 
    { rule = { class = 'Pidgin', role = 'conversation' },
@@ -441,8 +454,14 @@ rules.rules = {
      properties = { tag = tags[1][11] },
      callback = awful.client.setslave, },
 
+   { rule = { class = 'Dolphin', name = 'Copying' },
+     properties = { floating = true } },
+
    { rule = { class = 'Emacs', name = 'Emacs-Org-Mode' },
      properties = { tag = tags[1][13] } },
+
+   -- { rule = { type = 'desktop' },
+   --   properties = { ontop = false, above = false, below = true, border_width = 0 } },
 }
 
 for cls, props in pairs(classrules) do
@@ -510,6 +529,13 @@ client.connect_signal("manage", function (c, startup)
 
         awful.titlebar(c):set_widget(layout)
     end
+    
+    if c.class == "Plasma-desktop" and c.type ~= "dock" and c.skip_taskbar then
+       c:geometry( { width = c.size_hints.min_width, height = c.size_hints.min_height } )
+       awful.placement.under_mouse(c)
+       awful.placement.no_offscreen(c)
+    end
+
 end)
 
 client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)

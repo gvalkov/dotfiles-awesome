@@ -174,4 +174,9 @@ function util.toggletag(i)
    end
 end
 
+function util.hjklfocus_and_raise(direction) 
+   awful.client.focus.bydirection(direction)
+   if client.focus then client.focus:raise() end
+end
+
 return util
