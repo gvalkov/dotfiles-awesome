@@ -13,6 +13,7 @@ freedesktop = {}
 freedesktop.utils = require('freedesktop.utils')
 freedesktop.menu = require('freedesktop.menu')
 serpent = require('lib.serpent')
+hints = require('lib.hints')
 scratch = require('scratch')
 
 -- user imports
@@ -38,6 +39,11 @@ confdir = awful.util.getdir('config')
 freedesktop.utils.icon_theme = 'Faenza'
 beautiful.init(confdir .. '/themes/mine/theme.lua')
 if beautiful.wallpaper then util.set_wallpaper(beautiful.wallpaper, screen) end
+
+-- hints
+hints.charoder = 'jkluiopyhnmfdsatgvcewqzx1234567890'
+hints.init()
+
 
 -- notification settings
 naughty.config.defaults.timeout = 5
@@ -274,6 +280,7 @@ globalkeys = ezconfig.keytable.join({
    ['M-`'] = awful.tag.history.restore,
    ['M-j'] = {util.raise_and_focus, 1},
    ['M-k'] = {util.raise_and_focus, -1},
+   ['M-,'] = hints.focus,
 
    -- layout
    ['M-S-j'] = {awful.client.swap.byidx, 1},
@@ -290,7 +297,7 @@ globalkeys = ezconfig.keytable.join({
    -- screens
    ['M-q'] = {awful.screen.focus, 1},
    ['M-S-q'] = function (c) awful.client.movetoscreen(c, 2) end,
-   ['M-w'] = {awful.screen.focus, 2},
+   -- ['M-w'] = {awful.screen.focus, 2},
    ['M-S-w'] = function (c) awful.client.movetoscreen(c, 1) end,
 
    -- programs
@@ -305,18 +312,18 @@ globalkeys = ezconfig.keytable.join({
    ['M-<Menu>'] = function () menus.main:show() end,
    
    -- 
-   ['M-j'] = {util.hjklfocus_and_raise, 'down'},
-   ['M-k'] = {util.hjklfocus_and_raise, 'up'},
-   ['M-h'] = {util.hjklfocus_and_raise, 'left'},
-   ['M-l'] = {util.hjklfocus_and_raise, 'right'},
+   ['M-y'] = {util.hjklfocus_and_raise, 'left'},
+   ['M-u'] = {util.hjklfocus_and_raise, 'down'},
+   ['M-i'] = {util.hjklfocus_and_raise, 'up'},
+   ['M-o'] = {util.hjklfocus_and_raise, 'right'},
 
    -- scratchpads
    ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 0.45},
    ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 0.45},
 
-   -- resizing
-   -- ['M-l'] =   {awful.tag.incmwfact, 0.05},
-   -- ['M-h'] =   {awful.tag.incmwfact, -0.05},
+   -- master windows, columns and ratios
+   ['M-l'] =   {awful.tag.incmwfact, 0.05},
+   ['M-h'] =   {awful.tag.incmwfact, -0.05},
    ['M-S-h'] = {awful.tag.incnmaster, 1},
    ['M-S-l'] = {awful.tag.incnmaster, -1},
    ['M-C-h'] = {awful.tag.incncol, 1},
@@ -353,7 +360,7 @@ clientkeys = ezconfig.keytable.join({
    ["M-C-<space>"] = awful.client.floating.toggle,
    ["M-C-<Return>"] = function (c) c:swap(awful.client.getmaster()) end,
    ["M-o"] = awful.client.movetoscreen,
-   ["M-t"] = function (c) c.ontop = not c.ontop end,
+   ["M-b"] = function (c) c.ontop = not c.ontop end,
    ["M-n"] = function (c) c.minimized = true end,
    ["M-C-m"] =
       function (c)
@@ -538,7 +545,27 @@ client.connect_signal("manage", function (c, startup)
 
 end)
 
-client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+-- client.connect_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+
+client.connect_signal("focus",
+    function(c)
+       local tag = awful.tag.selected(mouse.screen)
+       local count = 0
+       for _ in pairs(tag:clients()) do count = count + 1 end
+
+       local maximized = c.maximized_horizontal == true and c.maximized_vertical == true
+
+       -- show window border only when maximized or when the only client on a tag
+       if maximized or count == 1 then
+          c.border_width = 0
+          c.border_color = beautiful.border_normal
+       else
+          c.border_width = beautiful.border_width
+          c.border_color = beautiful.border_focus
+       end
+end)
+
+
 client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
 
 -- autostart

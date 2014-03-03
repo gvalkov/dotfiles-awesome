@@ -39,7 +39,10 @@ theme.bg_urgent = "#733339"
 -- Borders
 theme.border_width  = "1"
 theme.border_normal = "#3F3F3F"
-theme.border_focus  = "#6F6F6F"
+-- theme.border_focus  = "#F37B1D" -- orange
+-- theme.border_focus  = "#5EB95E" -- green
+theme.border_focus  = "#0E90D2" -- blue
+-- theme.border_focus  = "#DD514C" -- red
 theme.border_marked = "#CC9393"
 
 -- Titlebars
