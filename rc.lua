@@ -28,7 +28,8 @@ util.handle_startup_errors(awesome)
 util.handle_runtime_errors(awesome)
 
 -- globals
-terminal = 'konsole'
+-- terminal = 'konsole'
+terminal = 'gnome-terminal'
 editor = os.getenv('EDITOR') or 'emacs'
 editor_cmd = terminal .. ' -e ' .. editor
 modkey = 'Mod4' ; ezconfig.modkey = modkey
@@ -75,11 +76,11 @@ local layouts = {
    awful.layout.suit.max,
    awful.layout.suit.max.fullscreen,
    -- awful.layout.suit.magnifier
-   user_layouts.browse,          
-   user_layouts.termfair,
-   user_layouts.cascade,
-   user_layouts.cascadebrowse,   
-   user_layouts.centerwork,
+   -- user_layouts.browse,          
+   -- user_layouts.termfair,
+   -- user_layouts.cascade,
+   -- user_layouts.cascadebrowse,   
+   -- user_layouts.centerwork,
 }
 
 -- tags = {
@@ -110,9 +111,10 @@ menus.awesome = {
 
 menus.browsers = {
    { '&firefox', 'firefox', util.icon('firefox') },
-   { 'firefox &private', 'firefox -new-instance -private', util.icon('firefox') },
-   { 'ff &profile', util.firefox_profiles_menu(), util.icon('firefox') },
-   { '&chrome', 'google-chrome', util.icon('google-chrome') },
+   { 'ff &private', 'firefox -private-window', util.icon('firefox') },
+   { 'ff p&rofile', util.firefox_profiles_menu(), util.icon('firefox') },
+   { '&chromium', 'chromium', util.icon('chromium') },
+   { 'c&hrome', 'google-chrome', util.icon('google-chrome') },
 }
 
 menus.main = awful.menu({
@@ -269,12 +271,24 @@ globalkeys = ezconfig.keytable.join({
    ['M-<Left>'] = awful.tag.viewprev,
    ['M-<Right>'] = awful.tag.viewnext,
 
-   ['M-S-<Left>'] = function (client)
-      s = client.focus.screen
-
-      if awful.client.focus and tags[s][6] then
-         awful.client.movetotag(tags[s][6])
+   ['M-S-<Left>'] = function (c)
+      local curidx = awful.tag.getidx()
+      if curidx == 1 then
+         awful.client.movetotag(tags[client.focus.screen][9])
+      else
+         awful.client.movetotag(tags[client.focus.screen][curidx - 1])
       end
+      -- awful.tag.viewidx(-1)
+   end,
+
+   ['M-S-<Right>'] = function (c)
+      local curidx = awful.tag.getidx()
+      if curidx == #tags[client.focus.screen] then
+         awful.client.movetotag(tags[client.focus.screen][1])
+      else
+         awful.client.movetotag(tags[client.focus.screen][curidx + 1])
+      end
+      -- awful.tag.viewidx(1)
    end,
 
    ['M-`'] = awful.tag.history.restore,
@@ -296,14 +310,17 @@ globalkeys = ezconfig.keytable.join({
 
    -- screens
    ['M-q'] = {awful.screen.focus, 1},
-   ['M-S-q'] = function (c) awful.client.movetoscreen(c, 2) end,
-   -- ['M-w'] = {awful.screen.focus, 2},
-   ['M-S-w'] = function (c) awful.client.movetoscreen(c, 1) end,
+   ['M-S-q'] = function (c) awful.client.movetoscreen(c, 1) end,
+   ['M-w'] = {awful.screen.focus, 2},
+   ['M-S-w'] = function (c) awful.client.movetoscreen(c, 2) end,
 
    -- programs
    ['M-a'] = util.spawn(terminal),
+   ['M-S-C-a'] = util.spawn(terminal .. ' --role gnome-terminal-floating'),
    ['M-f'] = util.spawn('firefox'),
-   ['M-t'] = util.spawn('dolphin'),
+   ['M-t'] = util.spawn('nemo'),
+   ['M-S-t'] = util.spawn(terminal .. ' -e ranger'),
+   -- ['M-t'] = util.spawn('dolphin'),
    ['M-g'] = util.spawn('gvim'),
    ['M-e'] = util.spawn('emacsclient -c'),
    ['M-C-S-q'] = awesome.quit,
@@ -318,8 +335,8 @@ globalkeys = ezconfig.keytable.join({
    ['M-o'] = {util.hjklfocus_and_raise, 'right'},
 
    -- scratchpads
-   ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 0.45},
-   ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 0.45},
+   ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 1, false},
+   ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 1, false},
 
    -- master windows, columns and ratios
    ['M-l'] =   {awful.tag.incmwfact, 0.05},
@@ -435,6 +452,9 @@ rules.rules = {
      properties = { floating = true } },
 
    { rule = { name = 'Menus' },
+     properties = { floating = true } },
+
+   { rule = { role = 'gnome-terminal-floating' },
      properties = { floating = true } },
 
    { rule = { name = 'Terminal' },

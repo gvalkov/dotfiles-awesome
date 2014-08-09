@@ -57,7 +57,8 @@ setmetatable(sessionmenu.ops, {
 --
 -- tailor the following functions to your needs
 function sessionmenu.ops.lock () 
-   system('xlock -mode blank')
+   -- system('xlock -mode blank')
+   system('i3lock-wrapper')
 end
 
 function sessionmenu.ops.logout () 
