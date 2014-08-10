@@ -35,6 +35,7 @@ editor_cmd = terminal .. ' -e ' .. editor
 modkey = 'Mod4' ; ezconfig.modkey = modkey
 altkey = 'Mod1' ; ezconfig.altkey = altkey
 confdir = awful.util.getdir('config')
+previous_tag_layout = awful.layout.suit.tile
 
 -- theming
 freedesktop.utils.icon_theme = 'Faenza'
@@ -347,6 +348,14 @@ globalkeys = ezconfig.keytable.join({
    ['M-C-l'] = {awful.tag.incncol, -1},
    ['M-<space>'] = {awful.layout.inc, layouts, 1},
    ['M-S-<space>'] = {awful.layout.inc, layouts, -1},
+   ['M-s'] = function ()
+      if awful.layout.get() == awful.layout.suit.max.fullscreen then
+         awful.layout.set(previous_tag_layout)
+      else
+         previous_tag_layout = awful.layout.get()
+         awful.layout.set(awful.layout.suit.max.fullscreen)
+      end
+   end,
    ['M-C-n'] = awful.client.restore,
 
    -- prompts
@@ -372,12 +381,12 @@ globalkeys = ezconfig.keytable.join({
 
 -- client key bindings
 clientkeys = ezconfig.keytable.join({
-   ['M-f'] = function (c) c.fullscreen = not c.fullscreen end,
+   ['M-b'] = function (c) c.fullscreen = not c.fullscreen end,
    ["M-c"] = function (c) c:kill() end,
    ["M-C-<space>"] = awful.client.floating.toggle,
    ["M-C-<Return>"] = function (c) c:swap(awful.client.getmaster()) end,
    ["M-o"] = awful.client.movetoscreen,
-   ["M-b"] = function (c) c.ontop = not c.ontop end,
+   ["M-z"] = function (c) c.ontop = not c.ontop end,
    ["M-n"] = function (c) c.minimized = true end,
    ["M-C-m"] =
       function (c)
