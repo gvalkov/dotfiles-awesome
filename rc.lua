@@ -77,10 +77,10 @@ local layouts = {
    awful.layout.suit.max,
    awful.layout.suit.max.fullscreen,
    -- awful.layout.suit.magnifier
-   -- user_layouts.browse,          
+   -- user_layouts.browse,
    -- user_layouts.termfair,
    -- user_layouts.cascade,
-   -- user_layouts.cascadebrowse,   
+   -- user_layouts.cascadebrowse,
    -- user_layouts.centerwork,
 }
 
@@ -148,8 +148,10 @@ widgets.taglist.buttons = ezconfig.btntable.join({
 })
 
 widgets.taglist.new = function(s)
-   return awful.widget.taglist(s, awful.widget.taglist.filter.all,
-                               widgets.taglist.buttons)
+   return awful.widget.taglist(
+      s, awful.widget.taglist.filter.all,
+      widgets.taglist.buttons
+   )
 end
 
 widgets.tasklist = {}
@@ -328,16 +330,16 @@ globalkeys = ezconfig.keytable.join({
    ['M-C-q'] = awesome.restart,
    ['M-m'] = function () menus.main:show() end,
    ['M-<Menu>'] = function () menus.main:show() end,
-   
-   -- 
+
+   --
    ['M-y'] = {util.hjklfocus_and_raise, 'left'},
    ['M-u'] = {util.hjklfocus_and_raise, 'down'},
    ['M-i'] = {util.hjklfocus_and_raise, 'up'},
    ['M-o'] = {util.hjklfocus_and_raise, 'right'},
 
    -- scratchpads
-   ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 1, 1, false},
-   ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 1, 1, false},
+   ['M-S-i'] = {scratch.drop, 'ipython-qt', 'top', 'center', 0.5, 1, false},
+   ['M-S-a'] = {scratch.drop, terminal, 'top', 'center', 0.5, 1, false},
 
    -- master windows, columns and ratios
    ['M-l'] =   {awful.tag.incmwfact, 0.05},
@@ -370,13 +372,7 @@ globalkeys = ezconfig.keytable.join({
             awful.util.getdir("cache") .. "/history_eval")
       end,
 
-   ['M-r'] = util.spawn(table.concat({
-    '/home/gv/.dotfiles/bin/dmenu-launch.py',
-    -- '-nb', "'#3F3F3F'", -- normal background color
-    -- '-nf', "'#DCDCCC'", -- normal foreground color
-    -- '-sb', "'#7F9F7F'", -- selected background color
-    -- '-sf', "'#DCDCCC'", -- selected foreground color
-    '-b'}, ' '))        -- at the bottom of the screen
+   ['M-r'] = util.spawn('rofi -show run'),
 })
 
 -- client key bindings
@@ -430,13 +426,6 @@ local classrules = {
    ['Qmlviewer']= {floating = true},
    ['MPlayer']  = {floating = true},
    ['pinentry'] = {floating = true},
-   ['krunner']  = {floating = true},
-   ['gimp']     = {floating = true},
-   ['Plasma']   = {floating = true, border_width = 0, sticky=true},
-   ['plasma-desktop']   = {floating = true, border_width = 0},
-   ['Plugin-container'] = {floating = true, border_width = 0},
-   ['Claws-mail'] = {tag = tags[1][5]},
-   ['xbmc.bin']   = {floating = true, border_width = 0},
    ['Firefox']    = {buttons = firefoxbuttons},
    ['VirtualBox'] = {tag = tags[1][9]},
    ['Emacs'] = {size_hints_honor = false},
@@ -507,65 +496,69 @@ for cls, props in pairs(classrules) do
 end
 
 -- signal function to execute when a new client appears.
-client.connect_signal("manage", function (c, startup)
-    -- Enable sloppy focus
-    c:connect_signal("mouse::enter", function(c)
-        if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
+client.connect_signal("manage",
+   function (c, startup)
+      -- Enable sloppy focus
+      c:connect_signal("mouse::enter",
+         function(c)
+            if awful.layout.get(c.screen) ~= awful.layout.suit.magnifier
             and awful.client.focus.filter(c) then
-            client.focus = c
-        end
-    end)
+               client.focus = c
+            end
+      end)
 
     if not startup then
-        -- Set the windows at the slave,
-        -- i.e. put it at the end of others instead of setting it master.
-        -- awful.client.setslave(c)
+       -- Set the windows at the slave,
+       -- i.e. put it at the end of others instead of setting it master.
+       -- awful.client.setslave(c)
 
-        -- Put windows in a smart way, only if they does not set an initial position.
-        if not c.size_hints.user_position and not c.size_hints.program_position then
-            awful.placement.no_overlap(c)
-            awful.placement.no_offscreen(c)
-        end
+       -- Put windows in a smart way, only if they does not set an initial position.
+       if not c.size_hints.user_position and not c.size_hints.program_position then
+          awful.placement.no_overlap(c)
+          awful.placement.no_offscreen(c)
+       end
     end
 
     local titlebars_enabled = false
     if titlebars_enabled and (c.type == "normal" or c.type == "dialog") then
-        -- Widgets that are aligned to the left
-        local left_layout = wibox.layout.fixed.horizontal()
-        left_layout:add(awful.titlebar.widget.iconwidget(c))
+       -- Widgets that are aligned to the left
+       local left_layout = wibox.layout.fixed.horizontal()
+       left_layout:add(awful.titlebar.widget.iconwidget(c))
 
-        -- Widgets that are aligned to the right
-        local right_layout = wibox.layout.fixed.horizontal()
-        right_layout:add(awful.titlebar.widget.floatingbutton(c))
-        right_layout:add(awful.titlebar.widget.maximizedbutton(c))
-        right_layout:add(awful.titlebar.widget.stickybutton(c))
-        right_layout:add(awful.titlebar.widget.ontopbutton(c))
-        right_layout:add(awful.titlebar.widget.closebutton(c))
+       -- Widgets that are aligned to the right
+       local right_layout = wibox.layout.fixed.horizontal()
+       right_layout:add(awful.titlebar.widget.floatingbutton(c))
+       right_layout:add(awful.titlebar.widget.maximizedbutton(c))
+       right_layout:add(awful.titlebar.widget.stickybutton(c))
+       right_layout:add(awful.titlebar.widget.ontopbutton(c))
+       right_layout:add(awful.titlebar.widget.closebutton(c))
 
-        -- The title goes in the middle
-        local title = awful.titlebar.widget.titlewidget(c)
-        title:buttons(awful.util.table.join(
-                awful.button({ }, 1, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.move(c)
-                end),
-                awful.button({ }, 3, function()
-                    client.focus = c
-                    c:raise()
-                    awful.mouse.client.resize(c)
-                end)
-                ))
+       -- The title goes in the middle
+       local title = awful.titlebar.widget.titlewidget(c)
+       title:buttons(
+          awful.util.table.join(
+             awful.button({ }, 1, function()
+                   client.focus = c
+                   c:raise()
+                   awful.mouse.client.move(c)
+             end),
+             awful.button({ }, 3, function()
+                   client.focus = c
+                   c:raise()
+                   awful.mouse.client.resize(c)
+             end)
+          )
+       )
 
-        -- Now bring it all together
-        local layout = wibox.layout.align.horizontal()
-        layout:set_left(left_layout)
-        layout:set_right(right_layout)
-        layout:set_middle(title)
+       -- Now bring it all together
+       local layout = wibox.layout.align.horizontal()
+       layout:set_left(left_layout)
+       layout:set_right(right_layout)
+       layout:set_middle(title)
 
-        awful.titlebar(c):set_widget(layout)
+       awful.titlebar(c):set_widget(layout)
     end
-    
+
     if c.class == "Plasma-desktop" and c.type ~= "dock" and c.skip_taskbar then
        c:geometry( { width = c.size_hints.min_width, height = c.size_hints.min_height } )
        awful.placement.under_mouse(c)
