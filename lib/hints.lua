@@ -1,5 +1,5 @@
 -- hints.lua --- window picker and hints for awesome
--- 
+--
 -- Source: https://github.com/zackpete/hints
 -- License: GPLv2
 --
@@ -45,7 +45,7 @@ function hints.init()
     hints.hintbox[char].height = hintsize
 
     letterbox[char] = wibox.widget.textbox()
-    letterbox[char]:set_markup("<span color=\"" .. beautiful.fg_normal .. "\"" .. ">" .. char.upper(char) .. "</span>")
+    -- letterbox[char]:set_markup("<span color=\"" .. beautiful.fg_normal .. "\"" .. ">" .. char.upper(char) .. "</span>")
     letterbox[char]:set_font("dejavu sans mono 40")
     letterbox[char]:set_align("center")
 
@@ -72,10 +72,10 @@ function hints.focus()
     if event == "release" then return true end
     keygrabber.stop()
 
-    if hintindex[key] then 
+    if hintindex[key] then
       client.focus = hintindex[key]
       hintindex[key]:raise()
-    end 
+    end
 
     for i,j in pairs(hintindex) do
       hints.hintbox[i].visible = false

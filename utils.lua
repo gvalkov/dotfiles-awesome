@@ -1,7 +1,6 @@
 local naughty = require('naughty')
 local awful   = require('awful')
 local gears   = require('gears')
-local serpent = require('lib.serpent')
 
 local freedesktop = {}
 local freedesktop_utils = require('freedesktop.utils')
