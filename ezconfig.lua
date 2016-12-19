@@ -1,22 +1,22 @@
 -- ezconfig.lua --- easy key and button setup for awesome
--- 
+--
 -- Author: Georgi Valkov <georgi.t.valkov@gmail.com>
 -- License: GPLv2
--- 
+--
 -- Usage:
 --   ezconfig = require('ezconfig')
--- 
+--
 --   ezconfig.modkey = 'Mod4'
 --   ezconfig.altkey = 'Mod1'
--- 
+--
 --   globalkeys = ezconfig.keytable.join({
---      ['M-<Left>'] = awful.tag.viewprev,      
+--      ['M-<Left>'] = awful.tag.viewprev,
 --      ['M-S-j'] = {awful.client.swap.byidx, 1},
 --      ['M-C-k'] = {awful.screen.focus_relative, -1},
 --      ['M-m'] = function () menus.main:show() end,
 --   })
 --
---   -- The above is functionally equivalent to: 
+--   -- The above is functionally equivalent to:
 --   key = ezconfig.key
 --   globalkeys = awful.util.table.join(
 --      key('M-<Left>', awful.tag.viewprev),
@@ -64,7 +64,7 @@ local function split(s, sep)
    end
    return res
 end
-      
+
 -- Returns an anonymous function if `callback` is a table:
 --   function () callback[0](unpack(callback[1:])) end
 local function cb_from_table(callback)
@@ -125,7 +125,7 @@ function ezconfig.btn(btndef, callback, newbtnfunc)
          return newbtnfunc(modkeys, button, callback)
       end
    end
-end      
+end
 
 function ezconfig.keytable.join(tbl)
    local res = {}

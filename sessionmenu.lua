@@ -1,8 +1,8 @@
 -- sessionmenu.lua --- an advanced session menu for awesome
--- 
+--
 -- Author: Georgi Valkov <georgi.t.valkov@gmail.com>
 -- License: GPLv2 (same as awesome)
--- 
+--
 -- Requires:
 --   dmenu or zenity
 --   inotifywait (part of inotify-tools)
@@ -11,7 +11,7 @@
 -- To enable the 'Next Boot' menu:
 --   1) setfacl -m u:$USER:r /boot/grub2/grub.cfg
 --   2) $USER ALL = NOPASSWD: /usr/sbin/grub2-reboot  #in /etc/sudoers
--- 
+--
 -- Usage:
 --   ezconfig = require('sessionmenu')
 --
@@ -56,25 +56,25 @@ setmetatable(sessionmenu.ops, {
 
 --
 -- tailor the following functions to your needs
-function sessionmenu.ops.lock () 
+function sessionmenu.ops.lock ()
    -- system('xlock -mode blank')
    system('i3lock-wrapper')
 end
 
-function sessionmenu.ops.logout () 
+function sessionmenu.ops.logout ()
    system('echo logout')
 end
 
-function sessionmenu.ops.suspend () 
+function sessionmenu.ops.suspend ()
    system('systemctl suspend')
 end
 
-function sessionmenu.ops.hibernate () 
+function sessionmenu.ops.hibernate ()
    system('systemctl hibernate')
 end
 
-function sessionmenu.ops.restart () 
-   system('systemctl reboot')
+function sessionmenu.ops.restart ()
+   system('sudo systemctl reboot')
 end
 
 function sessionmenu.ops.shutdown ()
@@ -110,7 +110,7 @@ end
 
 -- call a function after a period of time
 local function timed_call(sec, cb)
-   return function () 
+   return function ()
       if current_timer ~= nil then
          current_timer:stop()
       end
@@ -137,7 +137,7 @@ local function dmenu_timed_call(cb)
 
          local cmd = string.format(
 [=[
-while /bin/true; do 
+while /bin/true; do
     spec=$(echo "" | %s -p 'timespec:')
     [[ $? -ne 0 ]] && break
     n=${spec:0:$(( ${#spec} - 1 ))}
@@ -146,15 +146,15 @@ while /bin/true; do
     [[ ! "$n" =~ ^[0-9]+$ ]] && continue
     [[ ! "$period" =~ ^[smhd]$ ]] && continue
 
-    case "$period" in 
-        's') echo $(( $n * 1 )) ;; 
-        'm') echo $(( $n * 60 )) ;; 
-        'h') echo $(( $n * 3600 )) ;; 
-        'd') echo $(( $n * 86400 )) ;; 
+    case "$period" in
+        's') echo $(( $n * 1 )) ;;
+        'm') echo $(( $n * 60 )) ;;
+        'h') echo $(( $n * 3600 )) ;;
+        'd') echo $(( $n * 86400 )) ;;
     esac
     break
 done]=], dmenu_cmd)
-                                   
+
          local seconds = check_output(cmd)
          if seconds ~= nil then
             timed_call(seconds, cb)()
@@ -165,7 +165,7 @@ done]=], dmenu_cmd)
       command_timer:connect_signal('timeout', fn)
       command_timer:start()
    end
-end 
+end
 
 -- call a function once a process ends
 local function waitpid_call(pid, cb)
@@ -217,7 +217,7 @@ local function dmenu_waitpid_call(cb)
       command_timer:connect_signal('timeout', fn)
       command_timer:start()
    end
-end 
+end
 
 local function cancel_pending_action()
    if current_timer ~= nil then
@@ -233,7 +233,7 @@ local function generate_submenu(cb, nowlabel, nowicon)
    if nowlabel == nil then
       nowlabel = '&now'
    end
-   
+
    return {
       { nowlabel, cb, nowicon },
       { '&after', {
@@ -255,7 +255,7 @@ local function next_boot_submenu()
    else
       return nil
    end
-   
+
    local ret = {}
    local cmd =
       [[cat /boot/grub2/grub.cfg \

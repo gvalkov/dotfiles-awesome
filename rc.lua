@@ -31,6 +31,7 @@ hints.init()
 
 -- globals
 TERMINAL = 'gnome-terminal'
+BROWSER  = 'google-chrome'
 FILE_MANAGER = 'dolphin'
 EDITOR_CMD = 'emacsclient -c'
 
@@ -281,11 +282,16 @@ globalkeys = ezconfig.keytable.join({
    -- programs
    ['M-a'] = utils.spawn(TERMINAL),
    ['M-S-C-a'] = utils.spawn(TERMINAL .. ' --role gnome-terminal-floating'),
-   ['M-f'] = utils.spawn('firefox'),
+   ['M-f'] = utils.spawn(BROWSER),
    ['M-t'] = utils.spawn(FILE_MANAGER),
    ['M-S-t'] = utils.spawn(TERMINAL .. ' -e ranger'),
    ['M-g'] = utils.spawn('gvim'),
    ['M-e'] = utils.spawn('emacsclient -c'),
+
+   -- media keys
+   ['<XF86AudioRaiseVolume>'] = {utils.spawn('amixer set Master 9%+')},
+   ['<XF86AudioLowerVolume>'] = {utils.spawn('amixer set Master 9%-')},
+   ['<XF86AudioMute>'] =        {utils.spawn('amixer sset Master toggle')},
 
    -- awesome actions
    ['M-C-S-q'] = awesome.quit,
@@ -466,3 +472,4 @@ client.connect_signal("unfocus", function(c) c.border_color = beautiful.border_n
 
 -- Autostart
 awful.util.spawn_with_shell("xmodmap ~/.Xmodmap")
+awful.util.spawn_with_shell("xsetroot -solid '#2980B9'")
